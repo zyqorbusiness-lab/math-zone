@@ -1,0 +1,11 @@
+import Link from 'next/link';
+import type {Content,Chapter} from '@/lib/data';
+function headingFor(item:Content,chapter?:Chapter){return [chapter?.title,item.topic].filter(Boolean).join(' · ')||item.type;}
+export function InlineResources({items,chapters}:{items:Content[];chapters:Chapter[]}){
+ const byChapter=new Map(chapters.map(x=>[x.id,x]));
+ return <section aria-label="Notes and resources" className="inline-resources"><h2>Notes and resources</h2><p className="muted">Read the text, photos and documents here. Open the full reader if you want more space.</p>{items.map(item=>{const root=`/api/materials/${item.id}`,chapter=byChapter.get(item.chapter_id||'');return <article className="card inline-resource" key={item.id}><p className="eyebrow">{headingFor(item,chapter)}</p><h3>{item.title}</h3>{item.description&&<p className="note-body">{item.description}</p>}{item.premium?<p className="muted">This resource is not available yet.</p>:<>
+ {item.file_urls?.length?<section aria-label={`Notebook pages for ${item.title}`} className="notebook-pages">{item.file_urls.map((_,i)=><figure className="notebook-page" key={i}><figcaption>Photo {i+1} of {item.file_urls!.length}</figcaption><img src={`${root}?page=${i+1}`} alt={`${item.title}, notebook photo ${i+1}`} loading={i===0?'eager':'lazy'} decoding="async"/>{item.allow_download&&<a href={`${root}?page=${i+1}&download=1`}>Download photo {i+1}</a>}</figure>)}</section>:null}
+ {item.file_url?<div className="inline-document">{/\.(?:png|jpe?g|webp)$/i.test(item.file_url)?<img src={root} alt={item.title} loading="lazy"/>:item.type==='video'?<video controls preload="metadata" src={root}/>:<iframe title={`${item.title} document`} src={root} loading="lazy"/>}<p><a href={root} target="_blank" rel="noopener noreferrer">Open document ↗</a>{item.allow_download&&<> · <a href={`${root}?download=1`}>Download document</a></>}</p></div>:null}
+ {item.video_url&&/^https:\/\//i.test(item.video_url)&&<p><a href={item.video_url} target="_blank" rel="noopener noreferrer">Watch video ↗</a></p>}
+ <Link href={item.type==='video'?`/videos/${item.slug}`:`/notes/${item.slug}`} className="btn btn-outline">Open full reader ↗</Link></>}</article>})}</section>;
+}
