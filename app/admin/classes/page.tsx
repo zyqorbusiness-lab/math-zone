@@ -1,0 +1,1 @@
+import {redirect} from 'next/navigation';import {admin,db} from '@/lib/supabase';import {EntityManager} from '@/components/admin-entity';export default async function Page(){if(!await admin())redirect('/admin/login');const s=await db();const {data:items}=await s.from('classes').select('*').order('sort_order');return <EntityManager table="classes" items={items||[]}/>}
