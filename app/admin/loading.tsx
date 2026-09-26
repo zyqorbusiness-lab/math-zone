@@ -1,0 +1,1 @@
+export default function Loading(){return <div role="status" aria-label="Loading admin" className="section"><div className="skeleton" style={{height:18,width:110,marginBottom:20}}/><div className="skeleton" style={{height:54,maxWidth:460,marginBottom:30}}/><div className="skeleton" style={{height:280,width:'100%'}}/></div>}
