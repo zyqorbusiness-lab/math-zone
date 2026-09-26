@@ -1,2 +1,2 @@
-/* The fixed hosting badge occupies the bottom-right corner on small screens. */
-@media(max-width:620px){.bottom-nav{bottom:80px}main{padding-bottom:145px}}
+/* Bottom-centered glass dock on phones. */
+@media(max-width:620px){.bottom-nav{left:50%;right:auto;bottom:12px;transform:translateX(-50%);width:min(calc(100vw - 32px),390px);padding:8px 10px;gap:4px;justify-content:space-around}.bottom-nav a{min-width:0;flex:1;min-height:42px;font-size:10px}.bottom-nav svg{width:19px;height:19px}main{padding-bottom:80px}}
