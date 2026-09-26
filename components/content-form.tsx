@@ -2,12 +2,13 @@
 import {useState,type ReactNode,type FormEvent} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 import {saveContent} from '@/lib/actions';
+import {PhotosContext} from './photo-picker';
 
 const accepted=new Set(['application/pdf','image/jpeg','image/png','image/webp','video/mp4','application/vnd.openxmlformats-officedocument.wordprocessingml.document']);
 export function ContentForm({children,className,style}:{children:ReactNode;className?:string;style?:React.CSSProperties}){
-  const [percent,setPercent]=useState<number|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
+  const [percent,setPercent]=useState<number|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[photos,setPhotos]=useState<File[]>([]);
   async function submit(e:FormEvent<HTMLFormElement>){
-    e.preventDefault();if(busy)return;setBusy(true);setPercent(null);setError('');const form=e.currentTarget;const data=new FormData(form);const file=data.get('file');const pages=data.getAll('pages').filter((x):x is File=>x instanceof File&&x.size>0).sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));let path='';
+    e.preventDefault();if(busy)return;setBusy(true);setPercent(null);setError('');const form=e.currentTarget;const data=new FormData(form);const file=data.get('file');const pages=photos;let path='';
     try{
       if(pages.length>60)throw Error('Upload at most 60 photos per note.');const photos:string[]=[];for(const photo of pages){if(!['image/jpeg','image/png','image/webp'].includes(photo.type)||photo.size>12*1024*1024)throw Error('Each notebook page must be JPG, PNG or WebP under 12 MB.');}
       const uploads=[...(file instanceof File&&file.size?[file]:[]),...pages];for(const upload of uploads){
@@ -33,5 +34,5 @@ export function ContentForm({children,className,style}:{children:ReactNode;class
       data.delete('file');data.delete('pages');if(photos.length)data.set('file_urls',JSON.stringify(photos));await saveContent(data);window.location.assign('/admin/content?saved=1');
     }catch(e){setError(e instanceof Error?e.message:'Could not save content. Please retry.');setBusy(false)}
   }
-  return <form onSubmit={submit} className={className} style={style} encType="multipart/form-data" aria-busy={busy}>{children}{busy&&<p role="status" className="wide" style={{margin:0}}> {percent===null?'Saving content...':percent<100?`Uploading file: ${percent}%`:'Upload complete. Saving content...'}</p>}{percent!==null&&busy&&<progress className="wide" max={100} value={percent} style={{width:'100%'}}/>}{error&&<p role="alert" className="wide" style={{color:'#b4393e',margin:0}}>{error}</p>}</form>;
+  return <PhotosContext.Provider value={{photos,setPhotos}}><form onSubmit={submit} className={className} style={style} encType="multipart/form-data" aria-busy={busy}>{children}{busy&&<p role="status" className="wide" style={{margin:0}}> {percent===null?'Saving content...':percent<100?`Uploading file: ${percent}%`:'Upload complete. Saving content...'}</p>}{percent!==null&&busy&&<progress className="wide" max={100} value={percent} style={{width:'100%'}}/>}{error&&<p role="alert" className="wide" style={{color:'#b4393e',margin:0}}>{error}</p>}</form></PhotosContext.Provider>;
 }
