@@ -21,5 +21,7 @@
 @keyframes shimmer{to{background-position-x:-220%}}
 @media(prefers-reduced-motion:reduce){.skeleton{animation:none!important}}
 
-/* Keep the mobile navigation clear of the platform badge in the lower-right corner. */
-@media(max-width:620px){.bottom-nav{bottom:64px;padding-bottom:9px;box-shadow:0 -8px 22px #17231e0b}.bottom-nav a{min-height:41px}main{padding-bottom:145px}}
+/* Small frosted mobile dock; leave the hosting badge unobscured. */
+.mobile-admin-link{display:none}
+@media(max-width:620px){.mobile-admin-link{display:inline-flex;align-items:center;white-space:nowrap;font-size:12px;font-weight:800;color:#164d3c;border:1px solid #b4d1bd;border-radius:999px;padding:9px 11px;background:#eef7ef}.bottom-nav{left:12px;right:auto;width:min(66vw,252px);bottom:12px;justify-content:space-around;gap:3px;padding:8px;border:1px solid #c2d7c8;border-radius:18px;background:#ffffffd9;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 12px 38px #12291f27}.bottom-nav a{min-width:0;flex:1;min-height:39px;font-size:9px}.bottom-nav svg{width:18px;height:18px}main{padding-bottom:75px}}
+@media(max-width:365px){.bottom-nav{width:min(65vw,230px)}.mobile-admin-link{font-size:11px;padding:8px}}

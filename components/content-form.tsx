@@ -9,8 +9,8 @@ export function ContentForm({children,className,style}:{children:ReactNode;class
   async function submit(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(busy)return;setBusy(true);setPercent(null);setError('');const form=e.currentTarget;const data=new FormData(form);const file=data.get('file');const pages=data.getAll('pages').filter((x):x is File=>x instanceof File&&x.size>0).sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));let path='';
     try{
-      if(pages.length&&file instanceof File&&file.size)throw Error('Choose either one document or multiple notebook photos, not both.');if(pages.length>60)throw Error('Upload at most 60 photos per note.');const photos:string[]=[];for(const photo of pages){if(!['image/jpeg','image/png','image/webp'].includes(photo.type)||photo.size>12*1024*1024)throw Error('Each notebook page must be JPG, PNG or WebP under 12 MB.');}
-      const uploads=pages.length?pages:(file instanceof File&&file.size?[file]:[]);for(const upload of uploads){
+      if(pages.length>60)throw Error('Upload at most 60 photos per note.');const photos:string[]=[];for(const photo of pages){if(!['image/jpeg','image/png','image/webp'].includes(photo.type)||photo.size>12*1024*1024)throw Error('Each notebook page must be JPG, PNG or WebP under 12 MB.');}
+      const uploads=[...(file instanceof File&&file.size?[file]:[]),...pages];for(const upload of uploads){
         if(!accepted.has(upload.type)||upload.size>50*1024*1024)throw Error('Use a PDF, JPG, PNG, WebP, MP4 or DOCX under 50 MB.');
         const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
         if(!url||!key)throw Error('Storage is not configured.');
@@ -23,12 +23,12 @@ export function ContentForm({children,className,style}:{children:ReactNode;class
         await new Promise<void>((resolve,reject)=>{
           const xhr=new XMLHttpRequest();xhr.open('PUT',signed.signedUrl);
           xhr.setRequestHeader('Content-Type',upload.type);xhr.setRequestHeader('apikey',key);xhr.setRequestHeader('Authorization',`Bearer ${session.access_token}`);
-          xhr.upload.onprogress=ev=>{if(ev.lengthComputable)setPercent(Math.round(((pages.length?photos.length:0)+ev.loaded/ev.total)/(pages.length||1)*100))};
+          xhr.upload.onprogress=ev=>{if(ev.lengthComputable)setPercent(Math.round(((uploads.indexOf(upload))+ev.loaded/ev.total)/uploads.length*100))};
           xhr.onload=()=>xhr.status>=200&&xhr.status<300?resolve():reject(Error(`Upload failed (${xhr.status}). Please try again.`));
           xhr.onerror=()=>reject(Error('Upload connection failed. Please try again.'));
           xhr.send(upload);
         });
-        if(pages.length)photos.push(path);else data.set('file_url',path);setPercent(pages.length?Math.round(photos.length/pages.length*100):100);
+        if(upload===file)data.set('file_url',path);else photos.push(path);setPercent(Math.round((uploads.indexOf(upload)+1)/uploads.length*100));
       }
       data.delete('file');data.delete('pages');if(photos.length)data.set('file_urls',JSON.stringify(photos));await saveContent(data);window.location.assign('/admin/content?saved=1');
     }catch(e){setError(e instanceof Error?e.message:'Could not save content. Please retry.');setBusy(false)}
