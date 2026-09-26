@@ -7,7 +7,32 @@ export async function signIn(form:FormData){if(!configured())redirect('/admin/lo
 export async function signOut(){if(configured())await(await db()).auth.signOut();redirect('/admin/login')}
 export async function saveEntity(table:'classes'|'subjects'|'chapters',form:FormData){const s=await guard();const id=text(form,'id'),name=text(form,table==='chapters'?'title':'name');if(!name||name.length>180)throw Error('Enter a title under 180 characters');let payload:Record<string,unknown>={description:text(form,'description').slice(0,2000),sort_order:Number(form.get('sort_order')||0)};if(table==='chapters'){const subject_id=text(form,'subject_id');if(!subject_id)throw Error('Subject required');payload={...payload,title:name,slug:slug(name),subject_id}}else if(table==='subjects'){const class_id=text(form,'class_id');if(!class_id)throw Error('Class required');payload={...payload,name,slug:slug(name),class_id}}else payload={...payload,name,slug:slug(name)};
 const {error}=id?await s.from(table).update(payload).eq('id',id):await s.from(table).insert(payload);if(error)throw Error('Could not save item. Check for a duplicate name.');revalidatePath('/');revalidatePath('/classes');revalidatePath('/admin');redirect(`/admin/${table}?saved=1`)}
-export async function deleteEntity(table:'classes'|'subjects'|'chapters'|'content',id:string){const s=await guard();const {error}=await s.from(table).delete().eq('id',id);if(error)throw Error('Could not delete this item');revalidatePath('/');revalidatePath('/admin');revalidatePath('/classes')}
+export async function deleteEntity(table:'classes'|'subjects'|'chapters'|'content',id:string){
+ const s=await guard();
+ let paths:string[]=[];
+ if(table==='content'){
+  const {data:item,error:readError}=await s.from('content').select('file_url,file_urls').eq('id',id).single();
+  if(readError||!item)throw Error('Could not find this note to delete.');
+  paths=[...new Set([item.file_url,...(item.file_urls||[])].filter((x):x is string=>typeof x==='string'&&/^content\/[0-9a-f-]{36}\/[A-Za-z0-9._-]+$/.test(x)))];
+ }
+ const {error}=await s.from(table).delete().eq('id',id);
+ if(error)throw Error('Could not delete this item');
+ revalidatePath('/');revalidatePath('/admin');revalidatePath('/classes');revalidatePath('/admin/content');
+ if(table==='content'&&paths.length){
+  // Duplicated notes can share file paths. Do not remove a file used by another note.
+  const unshared:string[]=[];
+  for(const path of paths){
+   const [single,pages]=await Promise.all([
+    s.from('content').select('id').eq('file_url',path).limit(1),
+    s.from('content').select('id').contains('file_urls',[path]).limit(1)
+   ]);
+   if(single.error||pages.error)throw Error('Note deleted, but file cleanup could not be checked. Contact support to remove leftover files.');
+   if(!single.data?.length&&!pages.data?.length)unshared.push(path);
+  }
+  if(unshared.length){const {error:storageError}=await s.storage.from('materials').remove(unshared);
+   if(storageError)throw Error('Note deleted, but file cleanup failed. Contact support to remove leftover files.');}
+ }
+}
 const contentSchema=z.object({title:z.string().min(2).max(180),type:z.enum(['note','video','image','resource']),class_id:z.string().uuid(),subject_id:z.string().uuid(),chapter_id:z.string().uuid().or(z.literal('')).transform(x=>x||null),status:z.enum(['draft','published'])});
 export async function saveContent(form:FormData){const s=await guard();const id=text(form,'id');const payload=contentSchema.parse(Object.fromEntries(['title','type','class_id','subject_id','chapter_id','status'].map(k=>[k,text(form,k)])));const {data:subject}=await s.from('subjects').select('id,class_id').eq('id',payload.subject_id).single();const {data:chapter}=payload.chapter_id?await s.from('chapters').select('id,subject_id').eq('id',payload.chapter_id).single():{data:null};if(subject?.class_id!==payload.class_id||payload.chapter_id&&chapter?.subject_id!==payload.subject_id)throw Error('Choose a subject and chapter belonging to this class');const rawStart=text(form,'page_start'),rawEnd=text(form,'page_end'),kd=text(form,'kd_label'),legacyTopic=text(form,'topic');const {data:classRow}=await s.from('classes').select('name').eq('id',payload.class_id).single();const isClass5=classRow?.name==='Class 5',isLater=/^Class (?:[6-9]|10)$/.test(classRow?.name||'');let pageLabel='',kdLabel='';if(rawStart||rawEnd){const start=Number(rawStart||rawEnd),end=Number(rawEnd||rawStart);if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start<1||end<start||end>10000)throw Error('Enter a valid page range (start at 1, end at or after start).');pageLabel=start===end?`Page ${start}`:`Pages ${start}-${end}`;}if(kd){if(!isLater||!/^[0-9]{1,3}(?:\.[0-9]{1,3})?(?:\s*-\s*[0-9]{1,3}(?:\.[0-9]{1,3})?)?$/.test(kd))throw Error('Enter a K.D number (for example 1.1, 1.1-1.6, or 2) for Classes 6-10.');kdLabel=`K.D ${kd.replace(/\s*/g,'')}`;}if(isClass5&&!rawStart)throw Error('Class 5 needs a page number.');if(!payload.chapter_id&&!pageLabel&&!kdLabel)throw Error('Choose a chapter, page, or K.D label.');const topic=[kdLabel,pageLabel].filter(Boolean).join(' · ')||legacyTopic.slice(0,120);const file_url=text(form,'file_url')||undefined;const uploadedPages=text(form,'file_urls');let file_urls:string[]|undefined;if(uploadedPages){try{file_urls=JSON.parse(uploadedPages)}catch{throw Error('Invalid page list')}if(!Array.isArray(file_urls)||file_urls.length>60||file_urls.some(x=>typeof x!=='string'||!/^content\/[0-9a-f-]{36}\/[A-Za-z0-9._-]+$/.test(x)))throw Error('Invalid notebook pages. Upload up to 60 images.');for(const path of file_urls){const {data:stored,error}=await s.storage.from('materials').info(path);if(error||!stored)throw Error('A notebook page upload was not found in private storage.')}}
 if(file_url){if(!/^content\/[0-9a-f-]{36}\/[A-Za-z0-9._-]+$/.test(file_url))throw Error('Invalid uploaded file path');const {data:stored,error:storageError}=await s.storage.from('materials').info(file_url);if(storageError||!stored)throw Error('Upload was not found in private storage');}
