@@ -1,0 +1,8 @@
+import {admin,db} from '@/lib/supabase';import {notFound,redirect} from 'next/navigation';import Link from 'next/link';
+export default async function Preview({params}:{params:Promise<{id:string}>}){
+  if(!await admin())redirect('/admin/login');const {id}=await params;
+  const s=await db();const {data:item}=await s.from('content').select('title,description,type,status,premium,topic,file_url,video_url,allow_download').eq('id',id).single();
+  if(!item)notFound();let fileUrl:string|undefined;
+  if(item.file_url){const {data}=await s.storage.from('materials').createSignedUrl(item.file_url,120);fileUrl=data?.signedUrl}
+  return <div className="container section" style={{maxWidth:1000}}><Link href="/admin/content">← Back to content</Link><p className="eyebrow" style={{marginTop:35}}>ADMIN PREVIEW · {item.status.toUpperCase()} · {item.premium?'PREMIUM':'FREE'}</p><h1 className="page-title">{item.title}</h1><p className="muted">{item.topic||item.type} · Only an admin can open this preview. File preview links expire after two minutes.</p><article className="card" style={{padding:30,marginTop:30}}><div className="note-body"><p>{item.description||'No description yet.'}</p></div>{fileUrl&&item.type==='video'?<video src={fileUrl} controls style={{width:'100%',maxHeight:580}}/>:fileUrl?<><iframe title={`${item.title} preview`} src={fileUrl} style={{width:'100%',height:580,border:'1px solid var(--line)',borderRadius:12}}/><p><a href={fileUrl} target="_blank" rel="noopener noreferrer">Open uploaded file in a new tab ↗</a></p></>:item.file_url?<p>File preview unavailable. Check storage permissions.</p>:null}{item.video_url&&<p><a href={item.video_url} target="_blank" rel="noopener noreferrer">Open linked video ↗</a></p>}</article></div>
+}
