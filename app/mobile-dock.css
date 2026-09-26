@@ -1,0 +1,2 @@
+/* The fixed hosting badge occupies the bottom-right corner on small screens. */
+@media(max-width:620px){.bottom-nav{bottom:80px}main{padding-bottom:145px}}
