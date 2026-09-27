@@ -67,6 +67,7 @@
 @keyframes mzDrift{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(5deg)}}
 
 /* Premium hero infinity: hand-illustrated emerald ribbon with a slow living float. */
-.hero-infinity{position:absolute;left:50%;top:42%;width:min(340px,82%);z-index:0;pointer-events:none;filter:drop-shadow(0 22px 20px rgba(16,61,47,.35));animation:infFloat 6s cubic-bezier(.45,0,.55,1) infinite;will-change:transform}
-@keyframes infFloat{0%,100%{transform:translate(-50%,-50%) rotate(-2.2deg)}50%{transform:translate(-50%,calc(-50% - 14px)) rotate(2.2deg)}}
-@media(prefers-reduced-motion:reduce){.hero-infinity{animation:none;transform:translate(-50%,-50%)}}
+.hero-infinity{position:absolute;left:1%;top:2%;width:min(295px,58%);z-index:0;pointer-events:none;filter:drop-shadow(0 22px 20px rgba(16,61,47,.35));animation:infFloat 6s cubic-bezier(.45,0,.55,1) infinite;will-change:transform}
+@keyframes infFloat{0%,100%{transform:translateY(0) rotate(-2.4deg)}50%{transform:translateY(-13px) rotate(2.4deg)}}
+@media(max-width:700px){.hero-infinity{width:52%}}
+@media(prefers-reduced-motion:reduce){.hero-infinity{animation:none;transform:none}}
