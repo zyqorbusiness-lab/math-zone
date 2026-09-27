@@ -11,17 +11,10 @@ function audio(){
   return ac;
 }
 function tick(){
-  const c=audio();if(!c)return;const t=c.currentTime;
-  const n=Math.floor(c.sampleRate*.035),buf=c.createBuffer(1,n,c.sampleRate),d=buf.getChannelData(0);
-  for(let i=0;i<n;i++){d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.4)}
-  const src=c.createBufferSource();src.buffer=buf;
-  const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2900;bp.Q.value=.8;
-  const g=c.createGain();g.gain.setValueAtTime(.5,t);g.gain.exponentialRampToValueAtTime(.0001,t+.04);
-  src.connect(bp);bp.connect(g);g.connect(c.destination);src.start(t);
-  const o2=c.createOscillator(),g2=c.createGain();
-  o2.type='sine';o2.frequency.setValueAtTime(220,t);o2.frequency.exponentialRampToValueAtTime(130,t+.028);
-  g2.gain.setValueAtTime(.12,t);g2.gain.exponentialRampToValueAtTime(.0001,t+.035);
-  o2.connect(g2);g2.connect(c.destination);o2.start(t);o2.stop(t+.04);
+  const w=window as unknown as {__sfxA?:HTMLAudioElement};
+  if(!w.__sfxA){w.__sfxA=new Audio('data:audio/mpeg;base64,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);w.__sfxA.preload='auto'}
+  const a=w.__sfxA;
+  try{a.currentTime=0;a.volume=.55;const p=a.play();if(p&&p.catch)p.catch(()=>{})}catch{}
 }
 
 export default function MotionPack(){
