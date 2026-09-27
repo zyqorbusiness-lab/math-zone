@@ -12,14 +12,16 @@ function audio(){
 }
 function tick(){
   const c=audio();if(!c)return;const t=c.currentTime;
-  const o=c.createOscillator(),g=c.createGain();
-  o.type='sine';o.frequency.setValueAtTime(2100,t);o.frequency.exponentialRampToValueAtTime(680,t+.055);
-  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.05,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+.085);
-  o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.09);
+  const n=Math.floor(c.sampleRate*.035),buf=c.createBuffer(1,n,c.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<n;i++){d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.4)}
+  const src=c.createBufferSource();src.buffer=buf;
+  const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2900;bp.Q.value=.8;
+  const g=c.createGain();g.gain.setValueAtTime(.5,t);g.gain.exponentialRampToValueAtTime(.0001,t+.04);
+  src.connect(bp);bp.connect(g);g.connect(c.destination);src.start(t);
   const o2=c.createOscillator(),g2=c.createGain();
-  o2.type='triangle';o2.frequency.setValueAtTime(330,t);o2.frequency.exponentialRampToValueAtTime(205,t+.07);
-  g2.gain.setValueAtTime(.0001,t);g2.gain.exponentialRampToValueAtTime(.04,t+.009);g2.gain.exponentialRampToValueAtTime(.0001,t+.11);
-  o2.connect(g2);g2.connect(c.destination);o2.start(t);o2.stop(t+.12);
+  o2.type='sine';o2.frequency.setValueAtTime(220,t);o2.frequency.exponentialRampToValueAtTime(130,t+.028);
+  g2.gain.setValueAtTime(.12,t);g2.gain.exponentialRampToValueAtTime(.0001,t+.035);
+  o2.connect(g2);g2.connect(c.destination);o2.start(t);o2.stop(t+.04);
 }
 
 export default function MotionPack(){
