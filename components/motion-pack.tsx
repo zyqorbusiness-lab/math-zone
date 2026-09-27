@@ -48,7 +48,7 @@ export default function MotionPack(){
       const el=t&&t.closest?t.closest('a,button,summary,[role="button"],input[type="checkbox"],input[type="radio"],select,label'):null;
       if(!el)return;last=n;tick();
     };
-    document.addEventListener('pointerdown',h,{passive:true});
+    document.addEventListener('click',h,{passive:true});
     return()=>document.removeEventListener('pointerdown',h);
   },[]);
 
