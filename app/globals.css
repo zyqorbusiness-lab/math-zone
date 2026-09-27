@@ -67,7 +67,14 @@
 @keyframes mzDrift{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(5deg)}}
 
 /* Premium hero infinity: hand-illustrated emerald ribbon with a slow living float. */
-.hero-infinity{position:absolute;left:-7%;top:-4%;width:min(310px,60%);z-index:0;pointer-events:none;filter:drop-shadow(0 22px 20px rgba(16,61,47,.35));animation:infFloat 6s cubic-bezier(.45,0,.55,1) infinite;will-change:transform}
-@keyframes infFloat{0%,100%{transform:translateY(0) rotate(-2.4deg)}50%{transform:translateY(-13px) rotate(2.4deg)}}
+.hero-infinity{position:absolute;left:-7%;top:-4%;width:min(310px,60%);z-index:0;pointer-events:none;filter:drop-shadow(0 22px 20px rgba(16,61,47,.35));animation:infFloat 7s cubic-bezier(.45,0,.55,1) infinite;will-change:transform}
+@keyframes infFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 @media(max-width:700px){.hero-infinity{position:relative;left:auto;top:auto;width:46%;margin:0 auto 10px;display:block}}
-@media(prefers-reduced-motion:reduce){.hero-infinity{animation:none;transform:none}}
+@media(prefers-reduced-motion:reduce){.hero-infinity{animation:none;transform:none}.inf-motion{display:none}}
+
+.hero-infinity img{width:100%;height:auto;display:block}
+.inf-motion{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.inf-trace{fill:none;stroke:#f0cd7a;stroke-width:2.4;stroke-linecap:round;stroke-dasharray:.5 24;opacity:.55;animation:infTrace 7s linear infinite}
+@keyframes infTrace{to{stroke-dashoffset:-490}}
+.inf-dot{fill:#ffe1a0;filter:drop-shadow(0 0 5px #ffd27a) drop-shadow(0 0 12px #ff9a3c)}
+.inf-dot-late{opacity:.7}
