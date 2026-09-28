@@ -84,3 +84,9 @@
 @keyframes infTrace{to{stroke-dashoffset:-490}}
 .inf-dot{fill:#ffe1a0;filter:drop-shadow(0 0 5px #ffd27a) drop-shadow(0 0 12px #ff9a3c)}
 .inf-dot-late{opacity:.7}
+
+/* Navigation loader: shown the moment an internal link is clicked */
+.mz-navload{position:fixed;inset:0;z-index:9990;background:rgba(246,248,245,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;animation:mzNavIn .18s ease-out}
+.mz-navload-mark{font-size:34px}
+@keyframes mzNavIn{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.mz-navload{animation:none}}
