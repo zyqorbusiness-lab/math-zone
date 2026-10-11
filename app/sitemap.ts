@@ -1,7 +1,7 @@
 import type {MetadataRoute} from 'next';import {classes,subjects,chapters} from '@/lib/data';import {configured,db} from '@/lib/supabase';import {absolute,classPath,subjectPath,chapterPath,contentPath} from '@/lib/seo';import type {Content} from '@/lib/data';
 export const dynamic='force-dynamic';
 export default async function sitemap():Promise<MetadataRoute.Sitemap>{
- const out:MetadataRoute.Sitemap=['/','/classes','/search','/videos','/free-notes','/about','/contact','/privacy-policy','/terms'].map(p=>({url:absolute(p),changeFrequency:'weekly',priority:p==='/'?1:.6}));
+ const out:MetadataRoute.Sitemap=['/','/classes','/videos','/free-notes','/about','/contact','/privacy-policy','/terms'].map(p=>({url:absolute(p),changeFrequency:'weekly',priority:p==='/'?1:.6}));
  const [cls,subs,chs]=await Promise.all([classes(),subjects(),chapters()]);
  const byClass=new Map(cls.map(x=>[x.id,x])),bySubject=new Map(subs.map(x=>[x.id,x]));
  for(const c of cls)out.push({url:absolute(classPath(c)),changeFrequency:'weekly',priority:.8});
