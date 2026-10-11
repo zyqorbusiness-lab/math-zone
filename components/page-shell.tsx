@@ -6,7 +6,7 @@ export function PageShell({title,intro,path,children,type='WebPage'}:{title:stri
   <JsonLd data={{'@context':'https://schema.org','@type':type,name:title,url:absolute(path),description:intro,isPartOf:{'@type':'WebSite',name:'Math Zone',url:absolute('/')}}}/>
   <nav aria-label="Breadcrumb" style={{fontSize:14,marginBottom:18}}><Link href="/">Home</Link> / <span>{title}</span></nav>
   <h1 style={{fontSize:'clamp(34px,5vw,56px)',margin:'0 0 16px'}}>{title}</h1>
-  <p style={{fontSize:18,lineHeight:1.7,color:'#53675a'}}>{intro}</p>
-  <div style={{lineHeight:1.75,fontSize:16}}>{children}</div>
+  <p className="pageshell-intro" style={{fontSize:18,lineHeight:1.7,color:'#53675a'}}>{intro}</p>
+  <style>{`.prose-mz h2{font-size:26px;margin:36px 0 10px;letter-spacing:-.03em;line-height:1.2}.prose-mz p{margin:0 0 14px}.prose-mz ul{margin:0 0 14px;padding-left:22px;list-style:disc}.prose-mz li{margin:6px 0}.prose-mz a{color:#1f6b4c;text-decoration:underline;text-underline-offset:3px;font-weight:600}.prose-mz a:hover{color:#14532d}.pageshell-intro{margin:0 0 8px}`}</style><div className="prose-mz" style={{lineHeight:1.75,fontSize:16}}>{children}</div>
  </article>
 }
