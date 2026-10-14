@@ -77,7 +77,7 @@ export default function MotionPack(){
       <div className="mz-boot-bar"><i/></div>
     </div>}
     {navLoad&&<div className="mz-navload" role="status" aria-label="Loading page">
-      <p className="mz-boot-kick">MATH ZONE</p>
+      <p className="mz-boot-kick">NUMIVRA MATH</p>
       <p className="mz-boot-mark mz-navload-mark">Loading<span>.</span></p>
       <div className="mz-boot-bar"><i/></div>
     </div>}
