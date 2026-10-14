@@ -1,6 +1,6 @@
 import {PageShell} from '@/components/page-shell';import {seo} from '@/lib/seo';
-export const metadata=seo('Terms of Use | Math Zone','Terms for using Math Zone free notes and lessons for Classes 5-10.','/terms');
-export default function Terms(){return <PageShell title="Terms of Use" path="/terms" intro="By using Math Zone you agree to these simple terms. Last updated: 11 October 2026.">
+export const metadata=seo('Terms of Use | Numivra Math','Terms for using Numivra Math free notes and lessons for Classes 5-10.','/terms');
+export default function Terms(){return <PageShell title="Terms of Use" path="/terms" intro="By using Numivra Math you agree to these simple terms. Last updated: 11 October 2026.">
 <h2>Use of the notes</h2>
 <p>Notes and lessons are provided free for personal study. Please do not copy them to sell, or present them as your own work.</p>
 <h2>Accuracy</h2>
