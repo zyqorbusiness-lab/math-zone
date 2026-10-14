@@ -1,7 +1,7 @@
 import type {MetadataRoute} from 'next';import {classes,subjects,chapters} from '@/lib/data';import {configured,db} from '@/lib/supabase';import {absolute,classPath,subjectPath,chapterPath,contentPath} from '@/lib/seo';import type {Content} from '@/lib/data';
 export const dynamic='force-dynamic';
 export default async function sitemap():Promise<MetadataRoute.Sitemap>{
- const out:MetadataRoute.Sitemap=['/','/classes','/videos','/free-notes','/about','/contact','/privacy-policy','/terms'].map(p=>({url:absolute(p),changeFrequency:'weekly',priority:p==='/'?1:.6}));
+ const out:MetadataRoute.Sitemap=['/','/classes','/videos','/free-notes','/free-math-notes','/about','/contact','/privacy-policy','/terms'].map(p=>({url:absolute(p),changeFrequency:'weekly',priority:p==='/'?1:.6}));
  const [cls,subs,chs]=await Promise.all([classes(),subjects(),chapters()]);
  const rows:Pick<Content,'slug'|'type'|'updated_at'|'subject_id'|'chapter_id'>[]=[];
  if(configured()){const client=await db();for(let start=0;start<10000;start+=500){const {data,error}=await client.from('content').select('slug,type,updated_at,subject_id,chapter_id').eq('status','published').order('id').range(start,start+499);if(error||!data)break;rows.push(...(data as typeof rows));if(data.length<500)break}}
