@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import type {Class,Subject,Chapter,Content} from './data';
-export const SITE='https://mathzone1.vercel.app';
+export const SITE='https://numivra-math.vercel.app';
 export const absolute=(path:string)=>new URL(path,SITE).toString();
 export const plain=(text:string)=>text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 export const description=(text:string,fallback:string)=>plain(text||fallback).slice(0,155);
