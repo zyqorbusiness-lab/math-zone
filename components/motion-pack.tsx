@@ -20,7 +20,7 @@ export default function MotionPack(){
 
   useEffect(()=>{
     started.current=performance.now();let done=false;let cap:ReturnType<typeof setTimeout>|undefined;
-    const hide=()=>{if(done)return;done=true;const wait=Math.max(0,950-(performance.now()-started.current));
+    const hide=()=>{if(done)return;done=true;const wait=0;
       setTimeout(()=>{if(reduced()){setBoot(false);return}setLift(true);setTimeout(()=>setBoot(false),850)},wait)};
     if(document.readyState==='complete'){hide()}
     else{window.addEventListener('load',hide);cap=setTimeout(hide,2000)}
