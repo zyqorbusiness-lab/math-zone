@@ -71,9 +71,9 @@ export default function MotionPack(){
   },[pathname]);
 
   return <>
-    {boot&&<div className={'mz-boot'+(lift?' mz-boot-lift':'')} role="status" aria-label="Loading Math Zone">
+    {boot&&<div className={'mz-boot'+(lift?' mz-boot-lift':'')} role="status" aria-label="Loading Numivra Math">
       <p className="mz-boot-kick">CLASSES 5–10 · NOTES · VIDEOS</p>
-      <p className="mz-boot-mark">Math Zone<span>.</span></p>
+      <p className="mz-boot-mark">Numivra Math<span>.</span></p>
       <div className="mz-boot-bar"><i/></div>
     </div>}
     {navLoad&&<div className="mz-navload" role="status" aria-label="Loading page">
