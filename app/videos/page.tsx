@@ -1,4 +1,4 @@
 import type {Metadata} from 'next';import {seo} from '@/lib/seo';
-export const metadata:Metadata=seo('Video Lessons for Class 5-10','Free video lessons for Class 5-10 students on Math Zone.','/videos');
+export const metadata:Metadata=seo('Video Lessons for Class 5-10','Free video lessons for Class 5-10 students on Numivra Math.','/videos');
 export const dynamic='force-dynamic';
 import {content} from '@/lib/data';import {ContentCard,Empty} from '@/components/cards';export default async function Page(){const items=await content({type:'video'});return <div className="container section"><span className="eyebrow">WATCH AND LEARN</span><h1 className="page-title">Video lessons</h1><p className="muted">See difficult concepts in a new light.</p>{items.length?<div className="grid-cards" style={{marginTop:36}}>{items.map(x=><ContentCard key={x.id} item={x}/>)}</div>:<Empty title="No videos found"/>}</div>}
