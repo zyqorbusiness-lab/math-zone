@@ -1,4 +1,4 @@
-import Link from 'next/link';import {ArrowUpRight,BookOpen,PlayCircle,FileImage,Layers3} from 'lucide-react';import type {Class,Subject,Chapter,Content} from '@/lib/data';
+import Link from 'next/link';import {ArrowUpRight,BookOpen,PlayCircle,FileImage,Layers3} from '@/components/components/design-icons';import type {Class,Subject,Chapter,Content} from '@/lib/data';
 import {classNames} from '@/lib/class-names';
 export function Section({title,href,children}:{title:string;href?:string;children:React.ReactNode}){return <section className="section"><div className="section-heading"><h2>{title}</h2>{href&&<Link href={href} style={{fontWeight:700,color:'#164d3c',fontSize:14}}>View all ↗</Link>}</div>{children}</section>}
 export function ClassCard({item}:{item:Class}){return <Link href={`/classes/${item.slug}`} className="card tile"><div className="icon-box"><Layers3 size={23}/></div><div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:28}}><h3 style={{fontSize:19,margin:0}}>{item.name}</h3><ArrowUpRight size={19}/></div><p className="muted" style={{fontSize:13,marginBottom:0}}>{item.description}</p></Link>}
