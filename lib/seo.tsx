@@ -3,7 +3,18 @@ import type {Class,Subject,Chapter,Content} from './data';
 export const SITE='https://numivra-math.vercel.app';
 export const absolute=(path:string)=>new URL(path,SITE).toString();
 export const plain=(text:string)=>text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
-export const description=(text:string,fallback:string)=>plain(text||fallback).slice(0,155);
+export const description=(text:string,fallback:string)=>{
+ const s=plain(text||fallback);
+ if(s.length<=155)return s;
+ // Cut at the last full word inside the cap so snippets never end mid-word (Bengali words were being split).
+ let end=0;
+ for(const part of new Intl.Segmenter(undefined,{granularity:'word'}).segment(s)){
+  if(part.index+part.segment.length>155)break;
+  end=part.index+part.segment.length;
+ }
+ if(!end){for(const part of new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(s)){if(part.index+part.segment.length>155)break;end=part.index+part.segment.length;}}
+ return s.slice(0,end).replace(/[\s,;:()\-\u2013\u2014]+$/,'');
+};
 export function seo(title:string,summary:string,path:string):Metadata{
  const url=absolute(path),desc=description(summary,`${title} for Classes 5-10 on Numivra Math. Learn with Sabuj and Farhan.`);
  return {title:{absolute:title},description:desc,alternates:{canonical:url},openGraph:{type:'website',url,siteName:'Numivra Math',title,description:desc,locale:'en_IN',images:[{url:'/opengraph-image.png',width:1200,height:630,alt:'Numivra Math'}]},twitter:{card:'summary_large_image',title,description:desc,images:['/opengraph-image.png']}};
