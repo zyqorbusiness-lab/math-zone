@@ -6,7 +6,7 @@ export const plain=(text:string)=>text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' 
 export const description=(text:string,fallback:string)=>plain(text||fallback).slice(0,155);
 export function seo(title:string,summary:string,path:string):Metadata{
  const url=absolute(path),desc=description(summary,`${title} for Classes 5-10 on Numivra Math. Learn with Sabuj and Farhan.`);
- return {title:{absolute:title},description:desc,alternates:{canonical:url},openGraph:{type:'website',url,siteName:'Numivra Math',title,description:desc,locale:'en_IN'},twitter:{card:'summary',title,description:desc}};
+ return {title:{absolute:title},description:desc,alternates:{canonical:url},openGraph:{type:'website',url,siteName:'Numivra Math',title,description:desc,locale:'en_IN'},twitter:{card:'summary_large_image',title,description:desc}};
 }
 export const classPath=(c:Class)=>`/classes/${c.slug}`;
 export const subjectPath=(c:Class,s:Subject)=>`${classPath(c)}/${s.slug}`;
